@@ -96,7 +96,7 @@
     (when-not (= chash (:contents-hash record))
       (let [new-rec (assoc-in record [:target :contents-hash] chash)
             fpath (get-file-path (:name record))
-            f (or notifier identity)]
+            f (or notifier prn)]
         (write-task-to-file new-rec fpath)
         (f new-rec)))))
 
@@ -122,7 +122,8 @@
 
 (defn -main
   [& args]
-  (prn args))
+  ;; TODO: options, list and register task
+  (prn (check-diffs)))
 
 
 ;; Utils
