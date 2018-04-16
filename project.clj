@@ -3,6 +3,7 @@
 
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/data.json "0.2.6"]
+                 [org.clojure/tools.cli "0.3.6"]
                  [clj-http "2.3.0"]
                  [clj-time "0.11.0"]
                  [enlive "1.1.6"]

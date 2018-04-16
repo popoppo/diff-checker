@@ -4,6 +4,7 @@
    [clojure.data.json :as json]
    [clojure.java.io :as io]
    [clojure.spec.alpha :as s]
+   [clojure.tools.cli :as tcli]
    [environ.core :as environ]
    [net.cgrand.enlive-html :as enlive])
   (:import java.security.MessageDigest
@@ -120,14 +121,6 @@
              fseq)))))
 
 
-(defn -main
-  [& args]
-  ;; TODO: options, list and register task
-  (prn (check-diffs)))
-
-
-;; Utils
-
 (defn list-tasks
   []
   (let [dir-path (get-dir-path)
@@ -137,6 +130,32 @@
          (remove #(not (.isFile %)))
          (map #(.getName %)))))
 
+
+(defn get-task-info
+  [task-name]
+  (let [fpath (get-file-path task-name)]
+    (read-file-as-json fpath)))
+
+
+(def cli-options
+  [["-l" "--list" "List tasks"]
+   ["-n" "--name Name" "Task name"]]
+  #_[["-u" "--url URL" "Target URL"]
+   ["-s" "--selector SELECTOR" "Enlive selector"]])
+
+
+(defn -main
+  [& args]
+  ;; TODO: options, list and register task
+  (let [{:keys [options arguments summary errors]} (tcli/parse-opts args cli-options)]
+    (cond
+      (:list options) (-> list-tasks prn)
+      (:name options) (-> (get-task-info (:name options)) prn)
+      :else (check-diffs))))
+
+
+;; Utils
+
 (defn register-task
   [task] ;; might support DB or other storages
   ;; existance check sould be done?
@@ -145,7 +164,3 @@
       (io/make-parents fpath))
     (write-task-to-file task fpath)))
 
-(defn get-task-info
-  [task-name]
-  (let [fpath (get-file-path task-name)]
-    (read-file-as-json fpath)))
